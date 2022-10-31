@@ -69,21 +69,12 @@ export class CartService {
     this.userCarts[userId] = null;
   }
 
-  async removeByUserIdRepo(userId: String): Promise<void> {
-    console.log("removeByUserIdRepo:userId->", userId);
-    const cartEntity: CartEntity = await this.cartRepo.findOne({ where: { id: userId }, relations: ['Cart'] });
-    console.log("removeByUserIdRepo:cartEntity->", cartEntity);
-
-    this.cartRepo.delete(cartEntity)
-    console.log(typeof (cartEntity));
-  }
 
   async getAllCartsFromRepo(): Promise<CartEntity[]> {
     console.log("getAllCarts");
 
     const cartEntities: CartEntity[] = await this.cartRepo.find();
     console.log("getAllCarts:", cartEntities);
-
     return cartEntities;
   }
 
@@ -98,7 +89,7 @@ export class CartService {
     })
     this.userCartEntities[userId] = cart
 
-    console.log("findByUserIdRepo:cartId:", cartId, cart)
+    console.log("findByUserIdRepo:cartId:", cart)
     return this.userCartEntities[userId];
   }
 
@@ -106,6 +97,8 @@ export class CartService {
     console.log("findOrCreateByUserIdFromRepo:userId -> ", userId);
 
     const userCart: CartEntity = await this.findByUserIdFromRepo(userId);
+    console.log("userCart:", userCart)
+
     if (userCart) {
       return userCart;
     }
@@ -134,7 +127,18 @@ export class CartService {
     console.log("removeByUserIdFromRepo:userCart -> ", userId);
     const userCart = await this.findByUserIdFromRepo(userId)
     console.log("removeByUserIdFromRepo:userCart -> ", userCart);
-
-    await this.cartRepo.delete(userCart)
+    this.cartRepo.queryRunner.startTransaction()
+    try {
+      // execute some operations on this transaction:
+      await this.cartRepo.delete(userCart)
+      // commit transaction now:
+      this.cartRepo.queryRunner.commitTransaction()
+    } catch (err) {
+      // since we have errors let's rollback changes we made
+      await this.cartRepo.queryRunner.rollbackTransaction()
+    } finally {
+      // you need to release query runner which is manually created:
+      await this.cartRepo.queryRunner.release()
+    }
   }
 }

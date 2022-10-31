@@ -51,7 +51,19 @@ export class UsersService {
     const newUser = { id: name || id, name, password };
     console.log("createOneFromRepo:newUser->", newUser)
 
-    return await this.userRepo.save(newUser);
+    let newEntity: UserEntity;
+    await this.userRepo.queryRunner.startTransaction()
+    try {
+      newEntity = await this.userRepo.save(newUser)
+      await this.userRepo.queryRunner.commitTransaction()
+    }
+    catch (err) {
+      await this.userRepo.queryRunner.rollbackTransaction()
+    }
+    finally {
+      await this.userRepo.queryRunner.release()
+    }
+    return newEntity;
   }
 
 }

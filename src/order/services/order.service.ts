@@ -60,7 +60,7 @@ export class OrderService {
     return order;
   }
 
-  updateFromRepo(orderId: string, data) {
+  async updateFromRepo(orderId: string, data) {
     console.log("updateRepo:", orderId)
 
     const order = this.findByIdFromRepo(orderId);
@@ -73,10 +73,22 @@ export class OrderService {
       id: orderId,
     }
     console.log("toUpdateData:", toUpdateData)
-    this.orderRepo.save(toUpdateData);
+    await this.orderRepo.queryRunner.startTransaction()
+    try {
+      this.orderRepo.save(toUpdateData);
+
+      await this.orderRepo.queryRunner.commitTransaction()
+    }
+    catch (err) {
+      await this.orderRepo.queryRunner.rollbackTransaction()
+    }
+    finally {
+      await this.orderRepo.queryRunner.release()
+    }
+
   }
 
-  createFromRepo(data: any) {
+  async createFromRepo(data: any) {
 
     const id = v4(v4())
     const order = {
@@ -84,9 +96,20 @@ export class OrderService {
       id,
       status: 'inProgress',
     };
-    const created = this.orderRepo.create(data);
+    let created: OrderEntity[];
+    await this.orderRepo.queryRunner.startTransaction()
+    try {
+      created = this.orderRepo.create(order);
 
-    this.orderEntity[id] = created[id];
+      this.orderEntity[id] = created[id];
+      await this.orderRepo.queryRunner.commitTransaction()
+    }
+    catch (err) {
+      await this.orderRepo.queryRunner.rollbackTransaction()
+    }
+    finally {
+      await this.orderRepo.queryRunner.release()
+    }
 
     return created;
   }

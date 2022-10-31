@@ -6,6 +6,7 @@ import { AppRequest, getUserIdFromRequest } from '../shared';
 
 import { calculateCartTotal } from './models-rules';
 import { CartService } from './services';
+import { Cart as CartEntity } from 'src/db/entities/cart.entity';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -29,23 +30,23 @@ export class CartController {
 
   @Get(':id')
   async findUserCartFromRepo(@Param('id') id: string) {
-    const cart = this.cartService.findOrCreateByUserIdFromRepo(id);
+    const cart: CartEntity = await this.cartService.findOrCreateByUserIdFromRepo(id);
     console.log(cart)
     return {
       statusCode: HttpStatus.OK,
       message: 'OK',
-      data: { cart, total: "2" },
+      data: { cart, total: "1" },
     }
   }
 
-  @Get('all')
-  async getAllCarts(@Req() req: AppRequest) {
-    const cart = this.cartService.getAllCartsFromRepo();
-    console.log(cart)
+  @Get('/all')
+  async getAllCarts(): Promise<CartEntity[] | any> {
+    const carts: CartEntity[] = await this.cartService.getAllCartsFromRepo();
+    console.log("getAllCarts", carts)
     return {
       statusCode: HttpStatus.OK,
       message: 'OK',
-      data: { cart },
+      data: carts,
     }
   }
 
