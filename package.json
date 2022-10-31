@@ -30,6 +30,7 @@
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.5.1",
+    "@nestjs/typeorm": "^7.1.0",
     "@vendia/serverless-express": "^4.10.1",
     "aws-lambda": "^1.0.7",
     "helmet": "^4.2.0",
@@ -37,10 +38,11 @@
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pg": "^8.8.0",
     "rxjs": "^6.5.4",
-    "uuid": "^8.3.1",
     "typeorm": "^0.2.45",
-    "pg": "^8.8.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.2",

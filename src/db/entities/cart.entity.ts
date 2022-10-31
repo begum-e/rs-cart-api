@@ -1,6 +1,7 @@
 import { Entity, PrimaryColumn, OneToMany, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
-import { CartItem } from './CartItem';
-import { User } from './User';
+import { CartItem } from './cartItem.entity';
+import { User } from './user.entity';
+import { Order } from './order.entity';
 
 @Entity('Cart')
 export class Cart {
@@ -13,6 +14,13 @@ export class Cart {
         { cascade: true }
     )
     items: CartItem[];
+
+
+    @OneToMany(
+        () => Order,
+        orders => orders.cart
+    )
+    orders: Order[];
 
     @OneToOne(
         () => User, user => user.cart)

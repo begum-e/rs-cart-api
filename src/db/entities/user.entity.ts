@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { Cart } from './Cart';
+import { Entity, PrimaryColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Cart } from './cart.entity';
+import { Order } from './order.entity';
 
 @Entity('User')
 export class User {
@@ -22,4 +23,11 @@ export class User {
     )
     @JoinColumn({ name: 'cartId' })
     cart: Cart;
+
+    @OneToMany(
+        () => Order,
+        orders => orders.user,
+        { cascade: true }
+    )
+    orders: Order[];
 }

@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, OneToOne } from 'typeorm';
-import { Stock } from './stock';
+import { Stock } from './stock.entity';
 
 @Entity('Product')
 export class Product {
@@ -13,9 +13,10 @@ export class Product {
     description: string;
 
     @Column({ name: 'price' })
-    price: number;
+    price: string;
 
     @OneToOne(
-        () => Stock, stock => stock.product, { cascade: true })
+        () => Stock,
+        stock => stock.product, { cascade: true })
     stock: Stock;
 }
