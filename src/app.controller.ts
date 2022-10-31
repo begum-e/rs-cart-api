@@ -1,16 +1,27 @@
 import { Controller, Get, Request, Post, UseGuards, HttpStatus } from '@nestjs/common';
 import { LocalAuthGuard, AuthService, JwtAuthGuard, BasicAuthGuard } from './auth';
+import dbService from 'src/db/db.service';
 
 @Controller()
 export class AppController {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
-  @Get([ '', 'ping' ])
-  healthCheck(): any {
+  @Get(['', 'ping'])
+  async healthCheck(): Promise<any> {
+    const dbClient = await dbService();
+    const res = dbClient.query('SELECT $1::text as connected', [
+      'Connection to postgres successful!',
+    ]);
+    if (res) {
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+      };
+    }
     return {
-      statusCode: HttpStatus.OK,
-      message: 'OK',
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'NOT-OK',
     };
   }
 
@@ -19,7 +30,7 @@ export class AppController {
   async login(@Request() req) {
     const token = this.authService.login(req.user, 'basic');
 
-    return  {
+    return {
       statusCode: HttpStatus.OK,
       message: 'OK',
       data: {
