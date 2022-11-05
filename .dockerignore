@@ -1,0 +1,18 @@
+
+# Version Control related things
+.git
+.gitignore
+
+# Unnecesary things for production environment. (These are meaningful only for developers)
+Dockerfile
+.dockerignore
+README.md
+.vscode
+
+# Dependicies (since we are using multistage)
+node_modules
+dist
+
+# test folder is not used during image build
+test
+
