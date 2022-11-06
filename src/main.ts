@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 
-import * as helmet from 'helmet';
-
 import { AppModule } from './app.module';
+import helmet from 'helmet';
 
 const port = process.env.PORT || 4000;
 
